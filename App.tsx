@@ -41,9 +41,10 @@ const App: React.FC = () => {
 
       setCurrentImage(newImage);
       setHistory(prev => [newImage, ...prev].slice(0, 5)); // Keep last 5
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to generate thumbnail. Please try again.");
+      // Alert the specific error message to help debugging
+      alert(`Generation Failed: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }
