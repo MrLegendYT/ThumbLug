@@ -22,31 +22,41 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      // Explicitly type as File[] to avoid 'unknown' type inference issue
-      const files: File[] = Array.from(e.target.files);
+    if (e.target.files && e.target.files.length > 0) {
+      // Fix: Cast Array.from result to File[] to resolve 'unknown' type errors
+      const files = Array.from(e.target.files) as File[];
       const remainingSlots = 3 - referenceImages.length;
       const filesToProcess = files.slice(0, remainingSlots);
 
       filesToProcess.forEach(file => {
+        // Basic validation for image type
+        if (!file.type.startsWith('image/')) return;
+
         const reader = new FileReader();
         reader.onload = (ev) => {
           if (ev.target?.result) {
-            setReferenceImages(prev => [
-              ...prev, 
-              {
-                id: Math.random().toString(36).substr(2, 9),
-                data: ev.target!.result as string,
-                file: file
-              }
-            ]);
+            setReferenceImages(prev => {
+               // Prevent duplicates logic could go here if needed, but keeping simple for now
+               if (prev.length >= 3) return prev;
+               return [
+                ...prev, 
+                {
+                  id: Math.random().toString(36).substr(2, 9),
+                  data: ev.target!.result as string,
+                  file: file
+                }
+              ]
+            });
           }
         };
         reader.readAsDataURL(file);
       });
     }
-    // Reset input so same file can be selected again if cleared
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    
+    // Reset input value to allow selecting the same file again if user deleted it and wants to re-add
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const removeImage = (id: string) => {

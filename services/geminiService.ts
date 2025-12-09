@@ -11,10 +11,24 @@ export const generateThumbnail = async (
   referenceImages: ReferenceImage[]
 ): Promise<string> => {
   try {
-    // Initialize the client. 
-    // We assume process.env.API_KEY is available as per instructions.
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const model = 'gemini-2.5-flash-image'; // Nano Banana mapping
+    // Safely retrieve API Key. 
+    // In some browser environments 'process' might not be defined globally without a polyfill.
+    let apiKey = '';
+    try {
+      if (typeof process !== 'undefined' && process.env) {
+        apiKey = process.env.API_KEY || '';
+      }
+    } catch (e) {
+      console.warn("Could not access process.env:", e);
+    }
+
+    if (!apiKey) {
+      throw new Error("API Key is missing. Please ensure the 'API_KEY' environment variable is set in your deployment settings.");
+    }
+
+    // Initialize the client with the validated key
+    const ai = new GoogleGenAI({ apiKey: apiKey });
+    const model = 'gemini-2.5-flash-image'; // Nano Banana
 
     // Construct the parts array
     const parts: any[] = [];
@@ -81,7 +95,7 @@ export const generateThumbnail = async (
     throw new Error("No image data found in the response.");
   } catch (error: any) {
     console.error("Gemini API Error:", error);
-    // Re-throw with a clean message if possible
+    // Re-throw with a clean message
     throw new Error(error.message || "Unknown API Error");
   }
 };
