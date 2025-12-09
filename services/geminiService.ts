@@ -23,7 +23,7 @@ export const generateThumbnail = async (
     }
 
     if (!apiKey) {
-      throw new Error("API Key is missing. Please ensure the 'API_KEY' environment variable is set in your deployment settings.");
+      throw new Error("API Key is missing. Get a free key at https://aistudio.google.com/app/apikey and add it as 'API_KEY' in your Netlify Site Configuration (Environment variables).");
     }
 
     // Initialize the client with the validated key

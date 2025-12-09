@@ -13,6 +13,7 @@ const App: React.FC = () => {
   const [currentImage, setCurrentImage] = useState<GeneratedImage | null>(null);
   const [history, setHistory] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize with a dummy history item on mount
   useEffect(() => {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
 
     setIsGenerating(true);
     setCurrentImage(null); // Clear current view to show loader
+    setError(null); // Clear previous errors
 
     try {
       const base64Image = await generateThumbnail(prompt, referenceImages);
@@ -43,8 +45,7 @@ const App: React.FC = () => {
       setHistory(prev => [newImage, ...prev].slice(0, 5)); // Keep last 5
     } catch (error: any) {
       console.error(error);
-      // Alert the specific error message to help debugging
-      alert(`Generation Failed: ${error.message}`);
+      setError(error.message || "An unexpected error occurred");
     } finally {
       setIsGenerating(false);
     }
@@ -52,6 +53,7 @@ const App: React.FC = () => {
 
   const handleSelectHistory = (image: GeneratedImage) => {
     setCurrentImage(image);
+    setError(null);
     // Optionally restore prompt from history? 
     // setPrompt(image.prompt); 
   };
@@ -74,6 +76,7 @@ const App: React.FC = () => {
           currentImage={currentImage}
           isGenerating={isGenerating}
           onRegenerate={handleGenerate}
+          error={error}
         />
       </div>
 

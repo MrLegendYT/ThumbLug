@@ -5,9 +5,10 @@ interface OutputPanelProps {
   currentImage: GeneratedImage | null;
   isGenerating: boolean;
   onRegenerate: () => void;
+  error: string | null;
 }
 
-const OutputPanel: React.FC<OutputPanelProps> = ({ currentImage, isGenerating, onRegenerate }) => {
+const OutputPanel: React.FC<OutputPanelProps> = ({ currentImage, isGenerating, onRegenerate, error }) => {
 
   const handleDownload = () => {
     if (!currentImage) return;
@@ -50,6 +51,14 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ currentImage, isGenerating, o
         
         {isGenerating ? (
           <div className="loader-ring"></div>
+        ) : error ? (
+           <div className="text-center p-8 max-w-md">
+            <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+               <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">Generation Failed</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{error}</p>
+          </div>
         ) : currentImage ? (
           <img 
             src={currentImage.url} 
