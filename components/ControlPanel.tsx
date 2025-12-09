@@ -121,14 +121,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </div>
       </div>
 
-      {/* 3. Config (Only Aspect Ratio remains) */}
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Aspect Ratio</h3>
-        <select className="w-full bg-slate-900/60 border border-slate-700 text-slate-400 p-3 rounded-lg outline-none appearance-none cursor-not-allowed text-sm" disabled>
-          <option>16:9 (Default)</option>
-        </select>
-      </div>
-
       {/* Generate Button */}
       <button 
         onClick={onGenerate}

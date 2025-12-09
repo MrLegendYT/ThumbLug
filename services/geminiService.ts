@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { ReferenceImage } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 // Helper to strip the data:image/...;base64, prefix for the API
 const stripBase64Header = (base64String: string): string => {
   return base64String.split(',')[1];
@@ -13,6 +11,9 @@ export const generateThumbnail = async (
   referenceImages: ReferenceImage[]
 ): Promise<string> => {
   try {
+    // Initialize the client inside the function to ensure the app loads 
+    // even if the environment variable isn't immediately available during the initial render.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const model = 'gemini-2.5-flash-image'; // Nano Banana mapping
 
     // Construct the parts array
