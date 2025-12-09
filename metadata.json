@@ -1,0 +1,5 @@
+{
+  "name": "ThumbLug",
+  "description": "A Nano Banana (Gemini 2.5 Flash Image) powered AI thumbnail generator. Create viral YouTube thumbnails with text prompts and reference images.",
+  "requestFramePermissions": []
+}
