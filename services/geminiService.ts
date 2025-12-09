@@ -29,9 +29,8 @@ export const generateThumbnail = async (
     });
 
     // Construct a direct prompt that prioritizes user input.
-    const fullPrompt = prompt;
-
-    parts.push({ text: fullPrompt });
+    // We send the prompt as a text part.
+    parts.push({ text: prompt });
 
     const response = await ai.models.generateContent({
       model: model,
@@ -41,7 +40,6 @@ export const generateThumbnail = async (
       config: {
         imageConfig: {
           aspectRatio: "16:9",
-          // imageSize: "1K" // Optional, default is 1K
         },
       },
     });
@@ -59,7 +57,7 @@ export const generateThumbnail = async (
       }
     }
 
-    throw new Error("No image data found in response");
+    throw new Error("No image data found in response. The model might have returned text instead.");
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;

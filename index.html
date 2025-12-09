@@ -35,6 +35,15 @@
                     },
                     boxShadow: {
                         'glow': '0 0 20px rgba(139, 92, 246, 0.15)',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.7s ease-out forwards',
                     }
                 }
             }
@@ -78,5 +87,6 @@
 </head>
 <body class="text-slate-50 min-h-screen">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

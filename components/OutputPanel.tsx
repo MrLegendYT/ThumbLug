@@ -54,7 +54,7 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ currentImage, isGenerating, o
           <img 
             src={currentImage.url} 
             alt={currentImage.prompt} 
-            className="w-full h-full object-cover animate-in fade-in duration-700"
+            className="w-full h-full object-cover animate-fadeIn"
           />
         ) : (
           <div className="text-center text-slate-500 opacity-60">
