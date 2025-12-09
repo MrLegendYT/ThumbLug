@@ -6,24 +6,38 @@ const stripBase64Header = (base64String: string): string => {
   return base64String.split(',')[1];
 };
 
+const getApiKey = (): string => {
+  // 1. Try standard process.env (Node/Webpack/CRA)
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) { /* ignore */ }
+
+  // 2. Try Vite (import.meta.env)
+  // Vite requires variables to start with VITE_ to be exposed to the client
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
+      // @ts-ignore
+      if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+    }
+  } catch (e) { /* ignore */ }
+
+  return '';
+};
+
 export const generateThumbnail = async (
   prompt: string,
   referenceImages: ReferenceImage[]
 ): Promise<string> => {
   try {
-    // Safely retrieve API Key. 
-    // In some browser environments 'process' might not be defined globally without a polyfill.
-    let apiKey = '';
-    try {
-      if (typeof process !== 'undefined' && process.env) {
-        apiKey = process.env.API_KEY || '';
-      }
-    } catch (e) {
-      console.warn("Could not access process.env:", e);
-    }
+    const apiKey = getApiKey();
 
     if (!apiKey) {
-      throw new Error("API Key is missing. Get a free key at https://aistudio.google.com/app/apikey and add it as 'API_KEY' in your Netlify Site Configuration (Environment variables).");
+      throw new Error("API Key is missing. In Netlify, please add an environment variable named 'VITE_API_KEY' (not just API_KEY) with your Google AI Studio key.");
     }
 
     // Initialize the client with the validated key
