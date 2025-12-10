@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read the API key document (as requested)
+    match /secrets/gemini {
+      allow read: if true;
+    }
+  }
+}

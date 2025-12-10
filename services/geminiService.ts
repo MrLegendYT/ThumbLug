@@ -1,20 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 import { ReferenceImage } from '../types';
+import { fetchGeminiApiKey } from './firebase';
 
 // Helper to strip the data:image/...;base64, prefix for the API
 const stripBase64Header = (base64String: string): string => {
   return base64String.split(',')[1];
 };
 
-const getApiKey = (): string => {
-  // 1. Try standard process.env (Node/Webpack/CRA)
+const getApiKey = async (): Promise<string> => {
+  // 1. Try Firebase first (as requested)
+  const firebaseKey = await fetchGeminiApiKey();
+  if (firebaseKey) return firebaseKey;
+
+  // 2. Try standard process.env (Node/Webpack/CRA)
   try {
     if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
       return process.env.API_KEY;
     }
   } catch (e) { /* ignore */ }
 
-  // 2. Try Vite (import.meta.env)
+  // 3. Try Vite (import.meta.env)
   // Vite requires variables to start with VITE_ to be exposed to the client
   try {
     // @ts-ignore
@@ -34,10 +39,10 @@ export const generateThumbnail = async (
   referenceImages: ReferenceImage[]
 ): Promise<string> => {
   try {
-    const apiKey = getApiKey();
+    const apiKey = await getApiKey();
 
     if (!apiKey) {
-      throw new Error("API Key is missing. In Netlify, please add an environment variable named 'VITE_API_KEY' (not just API_KEY) with your Google AI Studio key.");
+      throw new Error("API Key is missing. Please add it to Firestore (secrets/gemini -> apiKey) or use environment variables.");
     }
 
     // Initialize the client with the validated key
