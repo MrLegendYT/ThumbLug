@@ -54,8 +54,6 @@ const App: React.FC = () => {
   const handleSelectHistory = (image: GeneratedImage) => {
     setCurrentImage(image);
     setError(null);
-    // Optionally restore prompt from history? 
-    // setPrompt(image.prompt); 
   };
 
   return (

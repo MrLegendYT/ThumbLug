@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ReferenceImage } from '../types';
 import { SAMPLE_PROMPTS } from '../constants';
 
@@ -6,7 +6,7 @@ interface ControlPanelProps {
   prompt: string;
   setPrompt: (val: string) => void;
   referenceImages: ReferenceImage[];
-  setReferenceImages: (imgs: ReferenceImage[]) => void;
+  setReferenceImages: React.Dispatch<React.SetStateAction<ReferenceImage[]>>;
   onGenerate: () => void;
   isGenerating: boolean;
 }
@@ -17,26 +17,23 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   referenceImages,
   setReferenceImages,
   onGenerate,
-  isGenerating,
+  isGenerating
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      // Fix: Cast Array.from result to File[] to resolve 'unknown' type errors
       const files = Array.from(e.target.files) as File[];
       const remainingSlots = 3 - referenceImages.length;
       const filesToProcess = files.slice(0, remainingSlots);
 
       filesToProcess.forEach(file => {
-        // Basic validation for image type
         if (!file.type.startsWith('image/')) return;
 
         const reader = new FileReader();
         reader.onload = (ev) => {
           if (ev.target?.result) {
             setReferenceImages(prev => {
-               // Prevent duplicates logic could go here if needed, but keeping simple for now
                if (prev.length >= 3) return prev;
                return [
                 ...prev, 
@@ -53,14 +50,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       });
     }
     
-    // Reset input value to allow selecting the same file again if user deleted it and wants to re-add
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
   const removeImage = (id: string) => {
-    setReferenceImages(referenceImages.filter(img => img.id !== id));
+    setReferenceImages(prev => prev.filter(img => img.id !== id));
   };
 
   const autoFillPrompt = () => {

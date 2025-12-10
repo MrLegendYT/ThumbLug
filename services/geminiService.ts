@@ -1,37 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { ReferenceImage } from '../types';
-import { fetchGeminiApiKey } from './firebase';
 
 // Helper to strip the data:image/...;base64, prefix for the API
 const stripBase64Header = (base64String: string): string => {
   return base64String.split(',')[1];
-};
-
-const getApiKey = async (): Promise<string> => {
-  // 1. Try Firebase first (as requested)
-  const firebaseKey = await fetchGeminiApiKey();
-  if (firebaseKey) return firebaseKey;
-
-  // 2. Try standard process.env (Node/Webpack/CRA)
-  try {
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      return process.env.API_KEY;
-    }
-  } catch (e) { /* ignore */ }
-
-  // 3. Try Vite (import.meta.env)
-  // Vite requires variables to start with VITE_ to be exposed to the client
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore
-      if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
-      // @ts-ignore
-      if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
-    }
-  } catch (e) { /* ignore */ }
-
-  return '';
 };
 
 export const generateThumbnail = async (
@@ -39,14 +11,7 @@ export const generateThumbnail = async (
   referenceImages: ReferenceImage[]
 ): Promise<string> => {
   try {
-    const apiKey = await getApiKey();
-
-    if (!apiKey) {
-      throw new Error("API Key is missing. Please add it to Firestore (secrets/gemini -> apiKey) or use environment variables.");
-    }
-
-    // Initialize the client with the validated key
-    const ai = new GoogleGenAI({ apiKey: apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const model = 'gemini-2.5-flash-image'; // Nano Banana
 
     // Construct the parts array
